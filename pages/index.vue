@@ -11,11 +11,11 @@
             class="bg-transparent text-gray-700 font-medium outline-none cursor-pointer"
           >
             <option
-              v-for="locale in availableLocales"
-              :key="locale.code"
-              :value="locale.code"
+              v-for="loc in availableLocales"
+              :key="loc.code"
+              :value="loc.code"
             >
-              {{ locale.name }}
+              {{ loc.name }}
             </option>
           </select>
         </div>
@@ -26,11 +26,11 @@
         <div class="flex items-center justify-center mb-4">
           <Icon name="noto:crescent-moon" class="text-6xl mr-3" />
           <h1 class="text-5xl sm:text-6xl font-bold dream-gradient-text">
-            {{ $t('app.title') }}
+            {{ t('app.title') }}
           </h1>
         </div>
         <p class="text-gray-600 text-lg sm:text-xl">
-          {{ $t('app.subtitle') }}
+          {{ t('app.subtitle') }}
         </p>
       </header>
 
@@ -41,14 +41,14 @@
           <div>
             <label for="dream" class="block text-sm font-semibold text-gray-700 mb-2">
               <Icon name="noto:sparkles" class="inline text-xl mr-1" />
-              {{ $t('form.label') }}
+              {{ t('form.label') }}
             </label>
             <textarea
               id="dream"
               v-model="dreamText"
               rows="6"
               class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none resize-none"
-              :placeholder="$t('form.placeholder')"
+              :placeholder="t('form.placeholder')"
               :disabled="isLoading"
             ></textarea>
           </div>
@@ -69,7 +69,7 @@
               name="noto:crystal-ball"
               class="text-2xl"
             />
-            <span>{{ isLoading ? $t('form.submitting') : $t('form.submit') }}</span>
+            <span>{{ isLoading ? t('form.submitting') : t('form.submit') }}</span>
           </button>
         </form>
       </div>
@@ -87,7 +87,7 @@
           <div class="flex items-start space-x-3 mb-4">
             <Icon name="noto:thought-balloon" class="text-3xl flex-shrink-0 mt-1" />
             <div>
-              <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ $t('result.title') }}</h2>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ t('result.title') }}</h2>
               <div class="h-1 w-20 dream-gradient rounded-full"></div>
             </div>
           </div>
@@ -104,7 +104,7 @@
             class="mt-6 w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
           >
             <Icon name="noto:sparkles" class="text-xl" />
-            <span>{{ $t('form.newDream') }}</span>
+            <span>{{ t('form.newDream') }}</span>
           </button>
         </div>
       </Transition>
@@ -125,7 +125,7 @@
           <div class="flex items-start space-x-3">
             <Icon name="noto:cross-mark" class="text-2xl flex-shrink-0" />
             <div>
-              <h3 class="font-semibold text-red-800 mb-1">{{ $t('error.title') }}</h3>
+              <h3 class="font-semibold text-red-800 mb-1">{{ t('error.title') }}</h3>
               <p class="text-red-700">{{ error }}</p>
             </div>
           </div>
@@ -136,7 +136,7 @@
       <footer class="mt-12 text-center text-gray-600 text-sm">
         <p class="flex items-center justify-center space-x-2">
           <Icon name="noto:magic-wand" class="text-lg" />
-          <span>{{ $t('app.poweredBy') }}</span>
+          <span>{{ t('app.poweredBy') }}</span>
         </p>
         <p class="mt-2">
           <a
@@ -154,8 +154,7 @@
 </template>
 
 <script setup lang="ts">
-const { locale, locales, t } = useI18n()
-const switchLocalePath = useSwitchLocalePath()
+const { locale, t, setLocale, availableLocales } = useI18n()
 
 const dreamText = ref('')
 const interpretation = ref('')
@@ -163,10 +162,14 @@ const isLoading = ref(false)
 const error = ref('')
 
 const currentLocale = ref(locale.value)
-const availableLocales = locales.value
+
+// Watch for locale changes
+watch(currentLocale, (newLocale) => {
+  setLocale(newLocale)
+})
 
 const changeLanguage = () => {
-  navigateTo(switchLocalePath(currentLocale.value))
+  setLocale(currentLocale.value)
 }
 
 const interpretDream = async () => {
@@ -212,4 +215,3 @@ const resetForm = () => {
   error.value = ''
 }
 </script>
-
