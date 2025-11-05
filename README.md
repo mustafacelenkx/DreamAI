@@ -137,7 +137,7 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 
 ## 👨‍💻 Geliştirici
 
-Mustafa  - [instagram](https://instagram/pixiulol)
+Mustafa  - [instagram](https://instagram.com/pixiulol)
 
 ## 🤝 Katkıda Bulunma
 
