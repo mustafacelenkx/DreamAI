@@ -137,7 +137,7 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 
 ## 👨‍💻 Geliştirici
 
-Mustafa Çelenk - [GitHub](https://github.com/mustafacelenkx)
+Mustafa  - [instagram](https://instagram/pixiulol)
 
 ## 🤝 Katkıda Bulunma
 
