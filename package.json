@@ -1,0 +1,25 @@
+{
+  "name": "dream-ai",
+  "version": "1.0.0",
+  "description": "AI-powered dream interpretation app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/icon": "^1.5.5",
+    "@nuxtjs/i18n": "^8.5.5",
+    "nuxt": "^3.13.2",
+    "vue": "^3.5.11"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "typescript": "^5.6.3"
+  }
+}
+
