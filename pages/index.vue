@@ -1,26 +1,6 @@
 <template>
   <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
-      <!-- Language Switcher -->
-      <div class="flex justify-end mb-4">
-        <div class="glass-card px-4 py-2 inline-flex items-center space-x-2">
-          <Icon name="noto:globe-with-meridians" class="text-xl" />
-          <select
-            v-model="currentLocale"
-            @change="changeLanguage"
-            class="bg-transparent text-gray-700 font-medium outline-none cursor-pointer"
-          >
-            <option
-              v-for="loc in availableLocales"
-              :key="loc.code"
-              :value="loc.code"
-            >
-              {{ loc.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-
       <!-- Header -->
       <header class="text-center mb-12 animate-float">
         <div class="flex items-center justify-center mb-4">
@@ -98,14 +78,50 @@
             </p>
           </div>
 
-          <!-- New Dream Button -->
-          <button
-            @click="resetForm"
-            class="mt-6 w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
-          >
-            <Icon name="noto:sparkles" class="text-xl" />
-            <span>{{ t('form.newDream') }}</span>
-          </button>
+          <!-- Action Buttons -->
+          <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <!-- Save Dream Button (only if logged in) -->
+            <button
+              v-if="user && !dreamSaved"
+              @click="handleSaveDream"
+              :disabled="savingDream"
+              class="flex-1 sm:flex-initial dream-gradient text-white font-semibold py-3 px-6 rounded-xl hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              <Icon
+                :name="savingDream ? 'svg-spinners:ring-resize' : 'noto:floppy-disk'"
+                class="text-xl"
+              />
+              <span>{{ savingDream ? t('form.saving') : t('form.save') }}</span>
+            </button>
+
+            <!-- Saved Message -->
+            <div
+              v-if="dreamSaved"
+              class="flex-1 sm:flex-initial bg-green-50 border-2 border-green-200 text-green-700 font-semibold py-3 px-6 rounded-xl flex items-center justify-center space-x-2"
+            >
+              <Icon name="noto:check-mark" class="text-xl" />
+              <span>{{ t('form.saved') }}</span>
+            </div>
+
+            <!-- New Dream Button -->
+            <button
+              @click="resetForm"
+              class="flex-1 sm:flex-initial px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
+            >
+              <Icon name="noto:sparkles" class="text-xl" />
+              <span>{{ t('form.newDream') }}</span>
+            </button>
+          </div>
+
+          <!-- Login Prompt (if not logged in) -->
+          <div v-if="!user" class="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-xl">
+            <p class="text-sm text-purple-700 text-center">
+              <NuxtLink to="/login" class="font-semibold hover:underline">{{ t('nav.login') }}</NuxtLink>
+              {{ locale === 'tr' ? 'yapın veya' : 'or' }}
+              <NuxtLink to="/register" class="font-semibold hover:underline">{{ t('nav.register') }}</NuxtLink>
+              {{ locale === 'tr' ? 'olun rüyalarınızı kaydetmek için' : 'to save your dreams' }}
+            </p>
+          </div>
         </div>
       </Transition>
 
@@ -155,22 +171,15 @@
 
 <script setup lang="ts">
 const { locale, t, setLocale, availableLocales } = useI18n()
+const { user } = useAuth()
+const { saveDream } = useDreams()
 
 const dreamText = ref('')
 const interpretation = ref('')
 const isLoading = ref(false)
 const error = ref('')
-
-const currentLocale = ref(locale.value)
-
-// Watch for locale changes
-watch(currentLocale, (newLocale) => {
-  setLocale(newLocale)
-})
-
-const changeLanguage = () => {
-  setLocale(currentLocale.value)
-}
+const savingDream = ref(false)
+const dreamSaved = ref(false)
 
 const interpretDream = async () => {
   if (!dreamText.value.trim()) return
@@ -178,6 +187,7 @@ const interpretDream = async () => {
   isLoading.value = true
   error.value = ''
   interpretation.value = ''
+  dreamSaved.value = false
 
   try {
     // Create language-specific prompt
@@ -209,9 +219,25 @@ Note: Your interpretation should be at least 3-4 paragraphs and address importan
   }
 }
 
+const handleSaveDream = async () => {
+  if (!user.value || !dreamText.value || !interpretation.value) return
+
+  savingDream.value = true
+  try {
+    await saveDream(dreamText.value, interpretation.value, locale.value)
+    dreamSaved.value = true
+  } catch (err) {
+    console.error('Error saving dream:', err)
+    error.value = t('error.message')
+  } finally {
+    savingDream.value = false
+  }
+}
+
 const resetForm = () => {
   dreamText.value = ''
   interpretation.value = ''
   error.value = ''
+  dreamSaved.value = false
 }
 </script>

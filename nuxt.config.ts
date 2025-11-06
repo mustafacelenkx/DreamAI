@@ -4,6 +4,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', '@nuxt/icon'],
   
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
+    },
+  },
+  
   app: {
     head: {
       title: 'DreamAI - Rüya Yorumları',
